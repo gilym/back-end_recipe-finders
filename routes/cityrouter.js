@@ -4,6 +4,11 @@ const Multer = require('multer')
 const imgUpload = require('../modules/imgUpload')
 const connection = require('../db');
 
+const multer = Multer({
+    storage: Multer.MemoryStorage,
+    fileSize: 5 * 1024 * 1024
+})
+
 cityrouter.get("/getCity", (req, res) => {
     const query = "SELECT * FROM city"
     connection.query(query, (err, rows, field) => {
@@ -38,5 +43,25 @@ cityrouter.delete("/deleteCity/:id", (req, res) => {
         }
     })
 })
+
+cityrouter.post('/city', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
+    const name = req.body.name;
+    const description = req.body.description;
+    let imageUrl = '';
+
+    if (req.file && req.file.cloudStoragePublicUrl) {
+        imageUrl = req.file.cloudStoragePublicUrl;
+    }
+
+    const query = 'INSERT INTO city (name, description, img) VALUES (?, ?, ?)';
+    connection.query(query, [name, description, imageUrl], (err, result) => {
+        if (err) {
+            res.status(500).send({ message: err.sqlMessage });
+        } else {
+            res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
+        }
+    });
+});
+
 
 module.exports = cityrouter

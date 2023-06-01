@@ -15,24 +15,37 @@ reciperouter.get("/recipes", (req, res) => {
         }
     });
 });
-reciperouter.post('/recipes', (req, res) => {
-    let body = '';
-    req.on('data', (chunk) => {
-        body += chunk;
-    });
-    req.on('end', () => {
-        const { ingredients, instructions } = JSON.parse(body);
-        const query = 'INSERT INTO recipes (ingredients, instructions) VALUES (?, ?)';
-        connection.query(query, [ingredients, instructions], (err, result) => {
-            if (err) {
-                res.status(500).send({ message: err.sqlMessage });
-            } else {
-                res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
-            }
-        });
-    });
-});
 
+// reciperouter.post('/recipes', (req, res) => {
+//     let body = '';
+//     req.on('data', (chunk) => {
+//         body += chunk;
+//     });
+//     req.on('end', () => {
+//         const { ingredients, instructions } = JSON.parse(body);
+//         const query = 'INSERT INTO recipes (ingredients, instructions) VALUES (?, ?)';
+//         connection.query(query, [ingredients, instructions], (err, result) => {
+//             if (err) {
+//                 res.status(500).send({ message: err.sqlMessage });
+//             } else {
+//                 res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
+//             }
+//         });
+//     });
+// });
+
+reciperouter.post('/recipes', (req, res) => {
+    const { ingredients, instructions } = req.body;
+  
+    const query = 'INSERT INTO recipes (ingredients, instructions) VALUES (?, ?)';
+    connection.query(query, [ingredients, instructions], (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.sqlMessage });
+      } else {
+        res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
+      }
+    });
+  });
 
 // reciperouter for /recipes/:id endpoint
 reciperouter.get("/recipes/:id", (req, res) => {

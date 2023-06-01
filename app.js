@@ -3,19 +3,15 @@ const app = express()
 const bodyParser = require('body-parser')
 
 const preferences = require('./routes/preferencesrouter')
-const city = require('./routes/cityrouter')
 const food = require('./routes/foodrouter')
-const recipe = require('./routes/recipesrouter')
 const user = require('./routes/usersrouter')
 const history = require('./routes/historyrouter')
 
 app.use(bodyParser.json()); // Middleware untuk mem-parsing body request dalam format JSON
 app.use(bodyParser.urlencoded({extended: true})); // Middleware untuk mem-parsing body request dalam format application/x-www-form-urlencoded
-
 app.use(preferences)
-app.use(city)
 app.use(food)
-app.use(recipe)
+
 app.use(user)
 app.use(history)
 

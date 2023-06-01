@@ -32,26 +32,29 @@ cityrouter.get("/getCity/:id", (req, res) => {
     })
 })
 
-cityrouter.put("/updateCity/:id", (req, res) => {
+cityrouter.put('/updateCity/:id', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
     const id = req.params.id;
-    const { name, description, img } = req.body;
+    const { name, description } = req.body;
+    let imageUrl = '';
   
-    const query = "UPDATE city SET name = ?, description = ?, img = ? WHERE id = ?";
-    connection.query(query, [name, description, img, id], (err, result) => {
+    if (req.file && req.file.cloudStoragePublicUrl) {
+      imageUrl = req.file.cloudStoragePublicUrl;
+    }
+  
+    const query = 'UPDATE city SET name = ?, description = ?, img = ? WHERE id = ?';
+    connection.query(query, [name, description, imageUrl, id], (err, result) => {
       if (err) {
         res.status(500).send({ message: err.sqlMessage });
       } else {
         if (result.affectedRows === 0) {
-          res.status(404).send({ message: "City not found" });
+          res.status(404).send({ message: 'City not found' });
         } else {
-          res.status(200).send({ message: "City updated successfully" });
+          res.status(200).send({ message: 'City updated successfully' });
         }
       }
     });
   });
   
-  
-
 cityrouter.delete("/deleteCity/:id", (req, res) => {
     const id = req.params.id
     
@@ -64,7 +67,6 @@ cityrouter.delete("/deleteCity/:id", (req, res) => {
         }
     })
 })
-
 cityrouter.post('/city', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
     const name = req.body.name;
     const description = req.body.description;

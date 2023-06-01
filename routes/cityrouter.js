@@ -32,9 +32,11 @@ cityrouter.get("/getCity/:id", (req, res) => {
     })
 })
 
+
 cityrouter.put('/updateCity/:id', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
     const id = req.params.id;
-    const { name, description } = req.body;
+    const name = req.body.name;
+    const description = req.body.description;
     let imageUrl = '';
   
     if (req.file && req.file.cloudStoragePublicUrl) {

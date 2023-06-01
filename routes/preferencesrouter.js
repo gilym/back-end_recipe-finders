@@ -40,26 +40,17 @@ preferencesrouter.get("/preferences/:id", (req, res) => {
 });
 
 preferencesrouter.post('/preferences', (req, res) => {
-    let body = '';
+    const { name } = req.body;
   
-    req.on('data', (chunk) => {
-      body += chunk;
-    });
-  
-    req.on('end', () => {
-      const { name } = JSON.parse(body);
-  
-      const query = 'INSERT INTO preferences (name) VALUES (?)';
-      connection.query(query, [name], (err, result) => {
-        if (err) {
-          res.status(500).send({ message: err.sqlMessage });
-        } else {
-          res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
-        }
-      });
+    const query = 'INSERT INTO preferences (name) VALUES (?)';
+    connection.query(query, [name], (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.sqlMessage });
+      } else {
+        res.status(201).send({ message: 'Data inserted successfully', insertId: result.insertId });
+      }
     });
   });
-  
 
 
 

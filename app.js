@@ -9,7 +9,9 @@ const recipe = require('./routes/recipesrouter')
 const user = require('./routes/usersrouter')
 const history = require('./routes/historyrouter')
 
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json()); // Middleware untuk mem-parsing body request dalam format JSON
+app.use(bodyParser.urlencoded({extended: true})); // Middleware untuk mem-parsing body request dalam format application/x-www-form-urlencoded
+
 app.use(preferences)
 app.use(city)
 app.use(food)

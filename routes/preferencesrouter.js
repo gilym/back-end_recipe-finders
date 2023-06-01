@@ -73,13 +73,10 @@ preferencesrouter.post("/insertrecord", multer.single('attachment'), imgUpload.u
     const date = req.body.date
     const notes = req.body.notes
     var imageUrl = ''
-
     if (req.file && req.file.cloudStoragePublicUrl) {
         imageUrl = req.file.cloudStoragePublicUrl
     }
-
     const query = "INSERT INTO records (name, amount, date, notes, attachment) values (?, ?, ?, ?, ?)"
-
     connection.query(query, [name, amount, date, notes, imageUrl], (err, rows, fields) => {
         if (err) {
             res.status(500).send({message: err.sqlMessage})

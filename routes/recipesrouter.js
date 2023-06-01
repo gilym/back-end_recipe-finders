@@ -22,7 +22,6 @@ reciperouter.post('/recipes', (req, res) => {
     });
     req.on('end', () => {
         const { ingredients, instructions } = JSON.parse(body);
-    
         const query = 'INSERT INTO recipes (ingredients, instructions) VALUES (?, ?)';
         connection.query(query, [ingredients, instructions], (err, result) => {
             if (err) {

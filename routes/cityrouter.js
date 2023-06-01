@@ -31,6 +31,27 @@ cityrouter.get("/getCity/:id", (req, res) => {
         }
     })
 })
+
+cityrouter.put("/updateCity/:id", (req, res) => {
+    const id = req.params.id;
+    const { name, description, img } = req.body;
+  
+    const query = "UPDATE city SET name = ?, description = ?, img = ? WHERE id = ?";
+    connection.query(query, [name, description, img, id], (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.sqlMessage });
+      } else {
+        if (result.affectedRows === 0) {
+          res.status(404).send({ message: "City not found" });
+        } else {
+          res.status(200).send({ message: "City updated successfully" });
+        }
+      }
+    });
+  });
+  
+  
+
 cityrouter.delete("/deleteCity/:id", (req, res) => {
     const id = req.params.id
     

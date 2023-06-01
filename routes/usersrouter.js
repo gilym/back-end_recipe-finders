@@ -5,6 +5,11 @@ const imgUpload = require('../modules/imgUpload')
 const connection = require('../db');
 
 
+const multer = Multer({
+    storage: Multer.MemoryStorage,
+    fileSize: 5 * 1024 * 1024
+})
+
 usersrouter.get("/users", (req, res) => {
     const query = "SELECT * FROM users";
     connection.query(query, (err, rows, field) => {
@@ -41,6 +46,21 @@ usersrouter.delete("/users/:id", (req, res) => {
         }
     });
 });
+
+usersrouter.post('/users', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
+    const { username, password, preferences } = req.body;
+    const imageUrl = req.file ? req.file.cloudStoragePublicUrl : '';
+  
+    const query = 'INSERT INTO users (username, password, preferences, img) VALUES (?, ?, ?, ?)';
+    connection.query(query, [username, password, preferences, imageUrl], (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.sqlMessage });
+      } else {
+        res.status(201).send({ message: 'User inserted successfully', insertId: result.insertId });
+      }
+    });
+  });
+  
 
 
 module.exports=usersrouter

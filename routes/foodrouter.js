@@ -4,6 +4,11 @@ const Multer = require('multer')
 const imgUpload = require('../modules/imgUpload')
 const connection = require('../db');
 
+const multer = Multer({
+    storage: Multer.MemoryStorage,
+    fileSize: 5 * 1024 * 1024
+})
+
 // Router for /food endpoint
 foodrouter.get("/food", (req, res) => {
     const query = "SELECT * FROM food";
@@ -41,5 +46,20 @@ foodrouter.delete("/food/:id", (req, res) => {
         }
     });
 });
+
+foodrouter.post('/food', multer.single('img'), imgUpload.uploadToGcs, (req, res) => {
+    const { category, name, description } = req.body;
+    const imageUrl = req.file ? req.file.cloudStoragePublicUrl : '';
+  
+    const query = 'INSERT INTO food (category, name, description, img) VALUES (?, ?, ?, ?)';
+    connection.query(query, [category, name, description, imageUrl], (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err.sqlMessage });
+      } else {
+        res.status(201).send({ message: 'Food inserted successfully', insertId: result.insertId });
+      }
+    });
+  });
+
 
 module.exports = foodrouter
